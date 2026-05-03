@@ -764,14 +764,6 @@ window.addEventListener("DOMContentLoaded", async () => {
     }
 });
 
-function openKeyModal() {
-    document.getElementById("api-key-modal").classList.add("active");
-}
-
-function closeKeyModal() {
-    document.getElementById("api-key-modal").classList.remove("active");
-}
-
 async function saveKey() {
     const key = document.getElementById("api-key-input").value.trim();
 
@@ -783,42 +775,56 @@ async function saveKey() {
     try {
         await api('/api-key/save', 'POST', { key });
 
+        state.hasApiKey = true;
+
+        updateApiKeyUI();
         closeKeyModal();
 
-        showToast("API key added successfully 🔑", "success");
+        showToast("API key saved successfully 🔑", "success");
 
-        state.hasApiKey = true;
-        updateApiKeyUI();
-        loadDashboard();
-
+        // clear input AFTER saving
         document.getElementById("api-key-input").value = "";
 
     } catch (e) {
-        showToast("Failed to save key", "error");
         console.error(e);
+        showToast("Failed to save key", "error");
     }
 }
 
 function updateApiKeyUI() {
-    const btn = document.querySelector('[onclick="openKeyModal()"]');
+    const btn = document.getElementById("apiKeyBtn");
+    const status = document.getElementById("apiKeyStatus");
 
     if (!btn) return;
 
     if (state.hasApiKey) {
-        btn.textContent = "🔑 API Key ✓";
-        btn.style.opacity = "0.7";
+        btn.textContent = "Edit API Key";
+        if (status) status.textContent = "API Key Added ✅";
     } else {
-        btn.textContent = "🔑 API Key";
-        btn.style.opacity = "1";
+        btn.textContent = "Add API Key";
+        if (status) status.textContent = "No API Key ❌";
     }
 }
 
 const modal = document.getElementById("api-key-modal");
 
-if (modal) {
-    modal.addEventListener("click", (e) => {
-        if (e.target.id === "api-key-modal") {
-            closeKeyModal();
-        }
-    });
+document.addEventListener("DOMContentLoaded", () => {
+    const modal = document.getElementById("api-key-modal");
+
+    if (modal) {
+        modal.addEventListener("click", (e) => {
+            if (e.target.id === "api-key-modal") {
+                closeKeyModal();
+            }
+        });
+    }
+});
+
+function openKeyModal() {
+    document.getElementById("api-key-input").value = "";
+    document.getElementById("api-key-modal").classList.add("active");
+}
+
+function closeKeyModal() {
+    document.getElementById("api-key-modal").classList.remove("active");
 }
