@@ -882,6 +882,3 @@ function openKeyModal() {
 function closeKeyModal() {
     document.getElementById("api-key-modal").classList.remove("active");
 }
-
-// Access the Supabase client you defined as 'sb'
-sb.auth.getSession().then(({ data }) => console.log("Your Auth Token:", data.session.access_token));
