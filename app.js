@@ -16,9 +16,33 @@ async function apiForm(path, formData) {
     });
 
     if (!res.ok) {
-        const err = await res.text();
-        throw new Error(err);
+    let err;
+
+    try {
+        err = await res.json();
+    } catch {
+        err = { detail: "UNKNOWN_ERROR" };
     }
+
+    if (err.detail === "DAILY_LIMIT_EXCEEDED") {
+        showToast("Daily API limit exceeded ⏳", "error");
+        throw new Error("LIMIT");
+    }
+
+    if (err.detail === "INVALID_API_KEY") {
+        showToast("Invalid API key 🔑", "error");
+        openKeyModal();
+        throw new Error("BAD_KEY");
+    }
+
+    if (err.detail === "NO_API_KEY") {
+        showToast("Add API key first 🔑", "error");
+        openKeyModal();
+        throw new Error("NO_KEY");
+    }
+
+    throw new Error(err.detail || "Upload failed");
+}
 
     return res.json();
 }
@@ -579,8 +603,14 @@ async function sendMessage() {
     } catch (e) {
         hideTyping();
         console.error("Chat send failed:", e);
-        appendMessage('persona', "⚠️ Error: Could not reach server.");
-        showToast("Message failed. Backend issue.", "error");
+
+        // don't show fake message if it's a known handled error
+        if (e.message === "LIMIT" || e.message === "BAD_KEY" || e.message === "NO_KEY") {
+            return;
+        }
+
+        appendMessage('persona', "⚠️ Something went wrong.");
+        showToast("Message failed. Try again.", "error");
     }
 
     state.isSending = false;
@@ -652,9 +682,33 @@ async function api(path, method = 'GET', body = null) {
     });
 
     if (!res.ok) {
-        const err = await res.text();
-        throw new Error(err);
+    let err;
+
+    try {
+        err = await res.json();
+    } catch {
+        err = { detail: "UNKNOWN_ERROR" };
     }
+
+    if (err.detail === "DAILY_LIMIT_EXCEEDED") {
+        showToast("Daily API limit exceeded ⏳", "error");
+        throw new Error("LIMIT");
+    }
+
+    if (err.detail === "INVALID_API_KEY") {
+        showToast("Invalid API key 🔑", "error");
+        openKeyModal();
+        throw new Error("BAD_KEY");
+    }
+
+    if (err.detail === "NO_API_KEY") {
+        showToast("Add API key first 🔑", "error");
+        openKeyModal();
+        throw new Error("NO_KEY");
+    }
+
+    throw new Error(err.detail || "Request failed");
+}
 
     return res.json();
 }
@@ -828,3 +882,6 @@ function openKeyModal() {
 function closeKeyModal() {
     document.getElementById("api-key-modal").classList.remove("active");
 }
+
+// Access the Supabase client you defined as 'sb'
+sb.auth.getSession().then(({ data }) => console.log("Your Auth Token:", data.session.access_token));
