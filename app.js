@@ -93,7 +93,7 @@ function setupChatMenu() {
 // ══════════════════════════════════════
 //  CONFIG
 // ══════════════════════════════════════
-const API = 'https://projekt-girlfriend.onrender.com';
+const API = 'https://projekt-girlfriend-backend.onrender.com';
 const SUPABASE_URL = 'https://piqjezrulfrnuwjubalz.supabase.co';
 const SUPABASE_ANON = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InBpcWplenJ1bGZybnV3anViYWx6Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzY0MDU5NzcsImV4cCI6MjA5MTk4MTk3N30.Usad9cv36s1GxOD6Yu49Myc6Ty8605gWu5b_o7uKHHM';
 
